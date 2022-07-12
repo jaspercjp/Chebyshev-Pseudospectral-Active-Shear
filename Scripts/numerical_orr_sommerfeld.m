@@ -1,0 +1,23 @@
+syms Y y Psi(y) Qxx(y) Qxy(y) l lambda W sigma k tau tauA gammaDot
+DPsi = diff(Psi);
+D2Psi = diff(DPsi);
+D4Psi = diff(diff(D2Psi));
+DQxx = diff(Qxx);
+D2Qxx = diff(DQxx);
+D2Qxy = diff(diff(Qxy));
+
+eqn1 = (D4Psi - 2*k^2*D2Psi + k^4*Psi)...
+    -(1 / (gammaDot * tauA)) * (k^2*Qxy + D2Qxy + 2*1i*k*DQxx) == 0;
+eqn2 = Qxx - 2*1i*k*lambda*gammaDot*DPsi...
+    + (l/W)^2*(k^2*Qxx - D2Qxx)...
+    + (i*k*y*gammaDot*tau + sigma*tau)*Qxx...
+    - gammaDot*tau*Qxy + (lambda*(gammaDot*tau)^2 / (1+(gammaDot*tau)^2))*(k^2*Psi - D2Psi) == 0;
+eqn3 = gammaDot*tau*Qxx + Qxy + (i*k*y*gammaDot*tau + sigma*tau)*Qxy...
+    + (l/W)^2*(Qxy - D2Qxy)...
+    - (lambda*(gammaDot*tau)^3 / (1+(gammaDot*tau)^2))*(k^2*Psi - D2Psi)...
+    - lambda*gammaDot*tau*(k^2*Psi + D2Psi) == 0;
+eqn1s = simplify(lhs(eqn1) - rhs(eqn1), 'Steps', 100);
+eqn2s = simplify(lhs(eqn2) - rhs(eqn2), 'Steps', 100);
+eqn3s = simplify(lhs(eqn3) - rhs(eqn3), 'Steps', 100);
+[V, S] = odeToVectorField(eqn1s, eqn2s, eqn3s);
+odefcn = matlabFunction(V, 'Vars', {Y y l lambda W sigma k tau tauA gammaDot});

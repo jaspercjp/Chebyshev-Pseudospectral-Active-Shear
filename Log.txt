@@ -1,0 +1,6 @@
+The solutions look roughly periodic on test1, with the exception of the 3rd eigenfunction, which I think
+might be because of the singular matrix warning
+
+When gammaDot is cranked up to 100, the eigenfunctions of Psi become more clustered together
+
+When gammaDot is cranked up to 1000, the eigenvalues because NaN
