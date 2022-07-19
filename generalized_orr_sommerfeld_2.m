@@ -8,10 +8,9 @@ W = 1; % Channel width
 %% PARAMETERS 
 k = 3;
 tau = 1;
-% tauA = 1; % replaced by aBar
 gammaDot = 10;   % imposed shear rate
 
-aBar = 0; % 1 / gammaDot*tauA
+aBar = 1.05; % 1 / gammaDot*tauA
 tBar = tau * gammaDot;
 
 %% DEFINED CONSTANTS
@@ -21,10 +20,7 @@ d1 = 2i*k*lambda*tBar;
 d2 = 1i * k * tBar;
 nees = 4;
 
-DELTA = 0.5;
-
 %% SETUP EIGENVALUE PROBLEM 
-
 B = chebop(-1/2, 1/2);
 B.op = @(y,Psi, Qxx, Qxy)[0 * Psi; Qxx; Qxy];
 
@@ -52,21 +48,47 @@ Psi = chebfun(eigfcns(1,:));
 Qxx = chebfun(eigfcns(2,:));
 Qxy = chebfun(eigfcns(3,:));
 
-psiPlot = figure();
-subplot(2,1,1);
-plot(real(Psi));
-subtitleF = sprintf("$\\bar{a}$=%0.3f, $k=$%0.3f, $\\bar{t}=$%0.3f", aBar, k, tBar);
-title("$\Psi$ eigenfunctions", subtitleF, "Interpreter", "latex");
-ylabel("Re$(\Psi)$", "Interpreter", "latex");
-subplot(2,1,2);
-plot(imag(Psi));
-ylabel("Im$(\Psi)$", "Interpreter", "latex");
-xlabel("y", "Interpreter", "latex");
+%% PLOT THE EIGENFUNCTIONS 
+PLOT = false; % SET TO TRUE WHEN PLOTTING
+if (PLOT)
+    psiPlot = figure();
+    subplot(2,3,1);
+    plot(real(Psi));
+    subtitleF = sprintf("$\\bar{a}=\\frac{1}{\\dot{\\gamma}\\tau_a}$=%0.3f, $k=$%0.3f, $\\bar{t}=\\dot{\\gamma}\\tau=$%0.3f", aBar, k, tBar);
+    title("$\Psi$", "Interpreter", "latex");
+    ylabel("Re$(\Psi)$", "Interpreter", "latex");
+    subplot(2,3,4);
+    plot(imag(Psi));
+    ylabel("Im$(\Psi)$", "Interpreter", "latex");
+    xlabel("y", "Interpreter", "latex");
 
+    subplot(2,3,2);
+    plot(real(Qxx));
+    title("$Q_{xx}$", "Interpreter", "latex");
+    ylabel("Re($Q_{xx}$)", "Interpreter", "latex");
+    subplot(2,3,5);
+    plot(imag(Qxx));
+    ylabel("Im($Q_{xx}$)", "Interpreter", "latex");
+    xlabel("y", "Interpreter", "latex");
 
-figure();
-plot(Qxx);
-title("Qxx");
-figure
-plot(Qxy);
-title("Qxy");
+    subplot(2,3,3);
+    plot(real(Qxy));
+    title("$Q_{xy}$", "Interpreter", "latex");
+    ylabel("Re($Q_{xy}$)", "Interpreter", "latex");
+    subplot(2,3,6);
+    plot(imag(Qxx));
+    ylabel("Im($Q_{xy}$)", "Interpreter", "latex");
+    xlabel("y", "Interpreter", "latex");
+
+    sgtitle(["Eigenfunctions of the Generalized Orr-Sommerfeld Eqns", subtitleF], 'FontSize', 13, 'Interpreter','latex');
+    legend(arrayfun(@(z) "\sigma="+complexToString(z), sigma));
+end
+
+function complexStr = complexToString(z)
+    x = real(z); y = imag(z);
+    if (sign(y) == 1)
+        complexStr = sprintf("%0.3f + %0.3fi", x, y);
+    else
+        complexStr = sprintf("%0.3f - %0.3fi", x, abs(y));
+    end
+end

@@ -4,3 +4,19 @@ might be because of the singular matrix warning
 When gammaDot is cranked up to 100, the eigenfunctions of Psi become more clustered together
 
 When gammaDot is cranked up to 1000, the eigenvalues because NaN
+
+-------------------------- 7/13 -------------------------
+Fixed equations using Wan's Mathematica notebooks
+Implemented more plotting functions
+
+(?) The eigenfunctions for Psi in zero_activity_test_1 do not vanish
+at the left boundary. What is up with that? 
+
+-------------------------- 7/18 -------------------------
+Performed analysis based on the transition diagram in Wan's paper.
+
+Confusingly, there is NO stable-unstable transitions at gammaDot*tau = 0.6 for different values of aBar. All
+eigenvalues have negative real parts!
+
+(?) What now distinguishes the effect have gammaDot and tau since we are collapsing them into one dimensionless
+constant? Do they contribute to the same effects?
