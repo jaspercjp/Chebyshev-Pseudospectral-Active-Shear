@@ -1,18 +1,47 @@
-% Each row corresponds to one value of tBar, and various values of aBar
-% We just have to test whether that row has an eigenvalue with positive
-% real part or not
-
-index = 1;
-
-r5 = eigvalsToStability(S5);
-for i = 1:length(aBars)
-    if (r5(i)==0)
-        tb(index) = tBar;
-        ab(index) = aBars(i);
-        index = index + 1;
+m = 1; mm = 1;
+for i = 1:tauCount
+    for j = 1:aBarCount
+        s = sol(i,j);
+        if (isStable(s.eigvals) == 0)
+            unstablePts(m, 1) = s.tBar;
+            unstablePts(m, 2) = s.aBar;
+            m = m+1;
+        else
+            stablePts(mm, 1) = s.tBar;
+            stablePts(mm, 2) = s.aBar;
+            mm = mm+1;
+        end
     end
 end
-plot(tb, tBar*ab, ".", "Markersize", 14)
+
+plot(unstablePts(:,1), unstablePts(:,2), 'x', 'markersize', 11); hold on;
+plot(stablePts(:,1), stablePts(:,2), '.', 'markersize', 14);
+
+%% TESTING
+% classify(sol(1,1))
+% classify(sol(3,5))
+
+function retVal = classify(sol)
+        % first look for zero imaginary parts
+        [m, n] = size(sol.eigvals);
+        eigvals = reshape(sol.eigvals, n, m);
+        for val = eigvals
+            if (imag(val) == 0)
+                if (sign(real(val)) >= 0)
+                    retVal = OSSolutionType.Unstable;
+                    return;
+                else
+                    retVal = OSSolutionType.Stable;
+                end
+            else
+                if (sign(real(val)) >= 0)
+                    retVal = OSSolutionType.UnstableOscillatory;
+                else
+                    retVal = OSSolutionType.StableOscillatory;
+                end
+            end
+        end
+      end
 
 function v = eigvalsToStability(eigMat)
     l = size(eigMat);
@@ -23,8 +52,10 @@ function v = eigvalsToStability(eigMat)
 end
 
 function s = isStable(eigvals)
+    [m,n] = size(eigvals);
+    eigvals = reshape(eigvals, n, m);
     for val = eigvals
-        if sign(real(val))==1
+        if (sign(real(val)) == 1)
             s = 0;
             return
         end

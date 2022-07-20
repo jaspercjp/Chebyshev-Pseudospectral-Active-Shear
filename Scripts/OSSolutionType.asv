@@ -1,0 +1,34 @@
+classdef OSSolutionType < Simulink.IntEnumType
+  enumeration
+    StableOscillatory(0)
+    UnstableOscillatory(1)
+    Stable(2)
+    Unstable(3)
+  end
+  methods
+      function retVal = classify(sol)
+        % first look for zero imaginary parts
+        [m, n] = size(sol.eigvals);
+        eigvals = reshape(sol.eigvals, n, m);
+        for val = eigvals
+            if (imag(val) == 0)
+                if (sign(real(val)) >= 0)
+                    retVal = OSSolutionType.Stable;
+                else
+                    retVal = OSSolutionType.Unstable;
+                end
+            end
+        else
+            if (sign(real(val)) >= 0)
+                    retVal = OSSolutionType.StableO;
+                else
+                    retVal = OSSolutionType.Unstable;
+                end
+        end
+
+
+        
+        end
+      end
+  end
+end 

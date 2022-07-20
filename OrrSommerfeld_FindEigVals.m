@@ -103,14 +103,26 @@ aBars10 = 1.25:0.33:3.4;
 
 
 %% TESTING OSSolutions wrapper
-k=1; gammaDot=1;
-for tau=0:0.1:0.6
+clear; clc;
+tauCount = 8; aBarCount = 20;
+k=0; gammaDot=1; nees=6;
+i = 1;
+sol(tauCount, aBarCount) = OSSolution;
+for tau=linspace(0, 0.7, tauCount)
     tBar = gammaDot * tau;
-    for aBar=linspace(0, 20, 8)
-        ...
-            % Solve eigenproblem and create OSSolution object.
+    j = 1;
+    for aBar=linspace(0, 8, aBarCount)
+        % Solve eigenproblem and create OSSolution object.
+        [ev, ef] = findEigVals(k, aBar, tau, gammaDot*tau, nees);
+        Psi = chebfun(ef(1,:));
+        Qxx = chebfun(ef(2,:));
+        Qxy = chebfun(ef(3,:));
+        sol(i,j) = OSSolution(Psi, Qxx, Qxy, ev, k, aBar, tau, gammaDot);
+        j = j+1;
     end
+    i=i+1;
 end
+disp("Finished!")
 
 %% FUNCTIONS
 function [S, Psi, Qxx, Qxy] = aBarIterate(k, tau, gammaDot, nees, aBars)
@@ -154,8 +166,8 @@ function [sigma, eigfcns] = findEigVals(k, aBar, tau, tBar, nees)
         tBar*Qxx + Qxy + d2*(y.*Qxy) + (l/W)^2*(k^2*Qxy - diff(Qxy,2))...
             - c2*(k^2*Psi - diff(Psi,2)) - lambda*tBar*(k^2*Psi + diff(Psi,2))]; 
 
-    A.lbc = @(Psi, Qxx, Qxy) [Psi; diff(Psi); diff(Qxx); diff(Qxy)];
-    A.rbc = @(Psi, Qxx, Qxy)[Psi; diff(Psi); diff(Qxx); diff(Qxy)];
+    A.lbc = @(Psi, Qxx, Qxy) [Psi; diff(Psi)+1/2; diff(Qxx); diff(Qxy)];
+    A.rbc = @(Psi, Qxx, Qxy)[Psi; diff(Psi)-1/2; diff(Qxx); diff(Qxy)];
 
     % SOLVE FOR THE EIGENVALUES
     sprintf("Solving eigenvalue problem for k=%0.3f, aBar=%0.3f, tBar=%0.3f", k, aBar, tBar)

@@ -12,7 +12,7 @@ classdef OSSolution
     end
     methods
         function obj = OSSolution(Psi, Qxx, Qxy, eigvals, k, aBar, tau, gammaDot)
-            if (nargin == 4)
+            if (nargin == 8)
                obj.Psi = Psi;
                obj.Qxx = Qxx;
                obj.Qxy = Qxy;
@@ -21,6 +21,7 @@ classdef OSSolution
                obj.aBar = aBar;
                obj.tau = tau;
                obj.gammaDot = gammaDot;
+               obj.tBar = gammaDot * tau;
             end
         end
     end
