@@ -1,3 +1,4 @@
+figure();
 m = 1; mm = 1;
 for i = 1:tauCount
     for j = 1:aBarCount
@@ -15,12 +16,15 @@ for i = 1:tauCount
 end
 
 plot(unstablePts(:,1), unstablePts(:,2), 'x', 'markersize', 11); hold on;
-plot(stablePts(:,1), stablePts(:,2), '.', 'markersize', 14);
+plot(stablePts(:,1), stablePts(:,2), '.', 'markersize', 14, 'color', 'red');
+ylabel("$\bar{a}$", "interpreter", "latex")
+xlabel("$\bar{\tau}\equiv\dot{\gamma}\tau$", "interpreter", "latex")
+
 
 %% TESTING
-% classify(sol(1,1))
-% classify(sol(3,5))
 
+
+%% FUNCTIONS
 function retVal = classify(sol)
         % first look for zero imaginary parts
         [m, n] = size(sol.eigvals);

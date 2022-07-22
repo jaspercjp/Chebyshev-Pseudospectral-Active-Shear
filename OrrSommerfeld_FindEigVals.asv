@@ -125,7 +125,7 @@ end
 disp("Finished!")
 
 %% TESTING NOT IMPOSING NO NET FLUX BC
-tau = 0.2; aBar = 3.7895; k = 1; gammaDot = 1;
+tau = 0.2; aBargit pu = 3.7895; k = 1; gammaDot = 1;
 tBar = gammaDot * tau;
 testSol = generateOSSol(k, aBar, tau, gammaDot, 6);
 
