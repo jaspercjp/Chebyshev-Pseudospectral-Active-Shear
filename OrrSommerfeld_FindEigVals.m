@@ -151,13 +151,20 @@ function [S, Psi, Qxx, Qxy] = aBarIterate(k, tau, gammaDot, nees, aBars)
         i = i+1;
     end
     disp("Finished!")
-end
+
+%% FUNCTIONS
+
 
 function [sigma, eigfcns] = findEigVals(k, aBar, tau, tBar, nees)
     % CONSTANTS
     l = 0.1; % Correlation length
+<<<<<<< HEAD
     lambda = 1; % particle shape parameter?
     W = 1; % Channel width
+=======
+    lambda = 1; % does this have a name?
+    W = 40; % Channel width
+>>>>>>> 2a0d8750b2ada076610fa0fd3649d9b9ed7ae0f9
     
     % DEFINED CONSTANTS
     c1 = lambda * tBar^2 / (1 + tBar^2);
@@ -180,8 +187,13 @@ function [sigma, eigfcns] = findEigVals(k, aBar, tau, tBar, nees)
         tBar*Qxx + Qxy + d2*(y.*Qxy) + (l/W)^2*(k^2*Qxy - diff(Qxy,2))...
             - c2*(k^2*Psi - diff(Psi,2)) - lambda*tBar*(k^2*Psi + diff(Psi,2))]; 
 
+<<<<<<< HEAD
     A.lbc = @(Psi, Qxx, Qxy) [0 * Qxx; diff(Psi)+1/2; diff(Qxx); diff(Qxy)];
     A.rbc = @(Psi, Qxx, Qxy)[0 * Qxx; diff(Psi)-1/2; diff(Qxx); diff(Qxy)];
+=======
+    A.lbc = @(Psi, Qxx, Qxy) [diff(Psi) + 0.5; Psi; diff(Qxx); diff(Qxy)];
+    A.rbc = @(Psi, Qxx, Qxy)[diff(Psi) - 0.5; Psi; diff(Qxx); diff(Qxy)];
+>>>>>>> 2a0d8750b2ada076610fa0fd3649d9b9ed7ae0f9
 
     % SOLVE FOR THE EIGENVALUES
     sprintf("Solving eigenvalue problem for k=%0.3f, aBar=%0.3f, tBar=%0.3f", k, aBar, tBar)

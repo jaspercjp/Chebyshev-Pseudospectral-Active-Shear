@@ -20,10 +20,6 @@ plot(stablePts(:,1), stablePts(:,2), '.', 'markersize', 14, 'color', 'red');
 ylabel("$\bar{a}$", "interpreter", "latex")
 xlabel("$\bar{\tau}\equiv\dot{\gamma}\tau$", "interpreter", "latex")
 
-
-%% TESTING
-
-
 %% FUNCTIONS
 function retVal = classify(sol)
         % first look for zero imaginary parts
