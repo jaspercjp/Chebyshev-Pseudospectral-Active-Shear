@@ -20,3 +20,9 @@ eigenvalues have negative real parts!
 
 (?) What now distinguishes the effect have gammaDot and tau since we are collapsing them into one dimensionless
 constant? Do they contribute to the same effects?
+
+-------------------------- 7/20 -------------------------
+Obtained a plot of instability on the tBar-a plane, but something seems off:
+	Fixing a, and increasing tBar, the plot shows that the flow goes from stable to unstable, 
+which does not make much sense because viscosity (tBar is proportional tau, which is proportional to viscosity) 
+should counter the effects of a perturbation by its dissipative nature. What is up with that??

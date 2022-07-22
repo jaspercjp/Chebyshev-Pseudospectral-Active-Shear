@@ -18,9 +18,25 @@ plot(unstablePts(:,1), unstablePts(:,2), 'x', 'markersize', 11); hold on;
 plot(stablePts(:,1), stablePts(:,2), '.', 'markersize', 14);
 
 %% TESTING
-% classify(sol(1,1))
-% classify(sol(3,5))
+figure();
+m=1; mm=1;
+[~, l] = size(sol);
+for i = 1:l
+    s = sol(i)
+    if (isStable(s.eigvals) == 0)
+        unstablePts(m, 1) = s.tBar;
+        unstablePts(m, 2) = s.aBar;
+        m = m+1;
+    else
+        stablePts(mm, 1) = s.tBar;
+        stablePts(mm, 2) = s.aBar;
+        mm = mm+1;
+    end
+end
+plot(unstablePts(:,1), unstablePts(:,2), 'x', 'markersize', 11); hold on;
+plot(stablePts(:,1), stablePts(:,2), '.', 'markersize', 14);
 
+%% FUNCTIONS
 function retVal = classify(sol)
         % first look for zero imaginary parts
         [m, n] = size(sol.eigvals);

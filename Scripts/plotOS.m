@@ -1,3 +1,8 @@
+function plotOS(oss)
+    plotOrrSommerfeld(oss.Psi, oss.Qxx, oss.Qxy, ...
+        oss.eigvals, oss.aBar, oss.k, oss.tBar);
+end
+
 function plotOrrSommerfeld(Psi, Qxx, Qxy, sigma, aBar, k, tBar)
     psiPlot = figure();
     subplot(2,3,1);

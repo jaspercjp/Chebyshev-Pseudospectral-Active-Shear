@@ -124,26 +124,39 @@ for tau=linspace(0, 0.7, tauCount)
 end
 disp("Finished!")
 
+%% TESTING TBAR INCREASE WITH FIXED BOUNDARY CONDITIONS ON DyPsi = pm 1/2
+clear; clc;
+tauCount = 8;
+k=4; aBar=4.6318; gammaDot=1; nees=6;
+i = 1;
+for tau=linspace(0, 0.7, tauCount)
+    [ev, ef] = findEigVals(k, aBar, tau, gammaDot*tau, nees);
+    Psi = chebfun(ef(1,:));
+    Qxx = chebfun(ef(2,:));
+    Qxy = chebfun(ef(3,:));
+    sol(i) = OSSolution(Psi, Qxx, Qxy, ev, k, aBar, tau, gammaDot);
+    i = i+1;
+end
+disp("Finished!")
+
+%% Probing around...
+k=1; aBar=3; gammaDot=1; tau=0.5; tBar=2; nees=6;
+s1 = generateOSSol(k, aBar, tau, gammaDot*tau, nees);
+
 %% FUNCTIONS
-function [S, Psi, Qxx, Qxy] = aBarIterate(k, tau, gammaDot, nees, aBars)
-    tBar = gammaDot * tau; 
-    i = 1;
-    % Consider preallocating later for optimization
-    for aBar = aBars
-        [S(i,:), eigfcns] = findEigVals(k, aBar, tau, gammaDot * tau, nees);
-        Psi(i) = ChebfunWrapper(chebfun(eigfcns(1,:)));
-        Qxx(i) = ChebfunWrapper(chebfun(eigfcns(2,:)));
-        Qxy(i) = ChebfunWrapper(chebfun(eigfcns(3,:)));
-        i = i+1;
-    end
-    disp("Finished!")
+function oss = generateOSSol(k, aBar, tau, tBar, nees)
+    [ev, ef] = findEigVals(k, aBar, tau, tBar, nees);
+    Psi = chebfun(ef(1,:));
+    Qxx = chebfun(ef(2,:));
+    Qxy = chebfun(ef(3,:));
+    oss = OSSolution(Psi, Qxx, Qxy, ev, k, aBar, tau, tBar/tau);
 end
 
 function [sigma, eigfcns] = findEigVals(k, aBar, tau, tBar, nees)
     % CONSTANTS
     l = 0.1; % Correlation length
     lambda = 1; % does this have a name?
-    W = 1; % Channel width
+    W = 40; % Channel width
     
     % DEFINED CONSTANTS
     c1 = lambda * tBar^2 / (1 + tBar^2);
@@ -166,8 +179,8 @@ function [sigma, eigfcns] = findEigVals(k, aBar, tau, tBar, nees)
         tBar*Qxx + Qxy + d2*(y.*Qxy) + (l/W)^2*(k^2*Qxy - diff(Qxy,2))...
             - c2*(k^2*Psi - diff(Psi,2)) - lambda*tBar*(k^2*Psi + diff(Psi,2))]; 
 
-    A.lbc = @(Psi, Qxx, Qxy) [Psi; diff(Psi)+1/2; diff(Qxx); diff(Qxy)];
-    A.rbc = @(Psi, Qxx, Qxy)[Psi; diff(Psi)-1/2; diff(Qxx); diff(Qxy)];
+    A.lbc = @(Psi, Qxx, Qxy) [diff(Psi) + 0.5; Psi; diff(Qxx); diff(Qxy)];
+    A.rbc = @(Psi, Qxx, Qxy)[diff(Psi) - 0.5; Psi; diff(Qxx); diff(Qxy)];
 
     % SOLVE FOR THE EIGENVALUES
     sprintf("Solving eigenvalue problem for k=%0.3f, aBar=%0.3f, tBar=%0.3f", k, aBar, tBar)
