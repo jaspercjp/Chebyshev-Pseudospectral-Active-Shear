@@ -152,19 +152,12 @@ function [S, Psi, Qxx, Qxy] = aBarIterate(k, tau, gammaDot, nees, aBars)
     end
     disp("Finished!")
 
-%% FUNCTIONS
-
-
 function [sigma, eigfcns] = findEigVals(k, aBar, tau, tBar, nees)
     % CONSTANTS
     l = 0.1; % Correlation length
-<<<<<<< HEAD
-    lambda = 1; % particle shape parameter?
+    % lambda = 1; % particle shape parameter?
     W = 1; % Channel width
-=======
-    lambda = 1; % does this have a name?
-    W = 40; % Channel width
->>>>>>> 2a0d8750b2ada076610fa0fd3649d9b9ed7ae0f9
+
     
     % DEFINED CONSTANTS
     c1 = lambda * tBar^2 / (1 + tBar^2);
@@ -176,24 +169,24 @@ function [sigma, eigfcns] = findEigVals(k, aBar, tau, tBar, nees)
     B = chebop(-1/2, 1/2);
     B.op = @(y,Psi, Qxx, Qxy)[0 * Psi; Qxx; Qxy];
 
-    A = chebop(-1/2, 1/2);
+    A = chebop(-W/2, W/2);
     A.op = @(y,Psi, Qxx, Qxy) [...
         (diff(Psi,4) - 2*k^2*diff(Psi, 2) + k^4 * Psi)... 
             - (aBar*(k^2*Qxy + diff(Qxy,2) + 2i*k*diff(Qxx)));
 
-        Qxx - d1*diff(Psi) + (l/W)^2*(k^2.*Qxx - diff(Qxx,2)) + d2*(y.*Qxx)...
-            - tBar*Qxy + c1*(k^2.*Psi - diff(Psi,2)); 
+        Qxx - d1*diff(Psi)...
+        + (l/W)^2*(k^2.*Qxx - diff(Qxx,2))...
+        + d2*(y.*Qxx)...
+        - tBar*Qxy...
+        + c1*(k^2.*Psi - diff(Psi,2)); 
 
-        tBar*Qxx + Qxy + d2*(y.*Qxy) + (l/W)^2*(k^2*Qxy - diff(Qxy,2))...
-            - c2*(k^2*Psi - diff(Psi,2)) - lambda*tBar*(k^2*Psi + diff(Psi,2))]; 
+        tBar*Qxx + Qxy + d2*(y.*Qxy)...
+        + (l/W)^2*(k^2*Qxy - diff(Qxy,2))...
+        - c2*(k^2*Psi - diff(Psi,2))...
+        - lambda*tBar*(k^2*Psi + diff(Psi,2))]; 
 
-<<<<<<< HEAD
-    A.lbc = @(Psi, Qxx, Qxy) [0 * Qxx; diff(Psi)+1/2; diff(Qxx); diff(Qxy)];
-    A.rbc = @(Psi, Qxx, Qxy)[0 * Qxx; diff(Psi)-1/2; diff(Qxx); diff(Qxy)];
-=======
     A.lbc = @(Psi, Qxx, Qxy) [diff(Psi) + 0.5; Psi; diff(Qxx); diff(Qxy)];
     A.rbc = @(Psi, Qxx, Qxy)[diff(Psi) - 0.5; Psi; diff(Qxx); diff(Qxy)];
->>>>>>> 2a0d8750b2ada076610fa0fd3649d9b9ed7ae0f9
 
     % SOLVE FOR THE EIGENVALUES
     sprintf("Solving eigenvalue problem for k=%0.3f, aBar=%0.3f, tBar=%0.3f", k, aBar, tBar)
