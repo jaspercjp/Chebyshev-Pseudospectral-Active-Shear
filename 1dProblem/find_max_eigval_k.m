@@ -6,7 +6,7 @@ global N, N = 40;
 % N is the amount of Chebyshev interpolation points the program uses
 % 2nd- and 4th-order differentiation matrices:
 global x, global D2, global D4, global I
-[D,x] = cheb(N); D2 = D^2; D2 = D2(2:N,2:N);
+[D,x] = cheb(N, 1); D2 = D^2; D2 = D2(2:N,2:N);
 S = diag([0; 1 ./(1-x(2:N).^2); 0]);
 D4 = (diag(1-x.^2)*D^4 - 8*diag(x)*D^3 - 12*D^2)*S;
 D4 = D4(2:N,2:N); %Obtaining the Chebyshev differentiation matrices
