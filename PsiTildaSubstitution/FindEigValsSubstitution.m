@@ -1,10 +1,28 @@
-%% ITERATE
+%% ITERATE 1
 clear; clc;
 tauCount = 8; aBarCount = 20;
 k=1; gammaDot=1; nees=6;
 i = 1;
 sol(tauCount, aBarCount) = OSSolution;
 for tau=linspace(0.8, 1.6, tauCount)
+    tBar = gammaDot * tau;
+    j = 1;
+    for aBar=linspace(0, 8, aBarCount)
+        % Solve eigenproblem and create OSSolution object.
+        sol(i,j) = generateOSSol(k, aBar, tau, gammaDot, nees);
+        j=j+1;
+    end
+    i=i+1;
+end
+disp("Finished!")
+
+%% ITERATE 2
+clear; clc;
+tauCount = 8; aBarCount = 20;
+k=realmin; gammaDot=1; nees=6;
+i = 1;
+sol(tauCount, aBarCount) = OSSolution;
+for tau=linspace(0,0.8, tauCount)
     tBar = gammaDot * tau;
     j = 1;
     for aBar=linspace(0, 8, aBarCount)
@@ -67,8 +85,8 @@ function [sigma, eigfcns] = findEigValsSub(k, aBar, tau, tBar, nees)
         - c2*(k^2*(-(2*r)^-1*cos(r*y) + Psi) - (r/2*cos(r*y) + diff(Psi,2)))...
         - lambda*tBar*(k^2*(-(2*r)^-1*cos(r*y) + Psi) + (r/2*cos(r*y) + diff(Psi,2)))]; 
 
-    A.lbc = @(Psi, Qxx, Qxy) [diff(Psi); Psi; diff(Qxx); diff(Qxy)];
-    A.rbc = @(Psi, Qxx, Qxy)[diff(Psi); Psi; diff(Qxx); diff(Qxy)];
+    A.lbc = @(Psi, Qxx, Qxy) [diff(Qxx); diff(Psi); Psi; diff(Qxy)];
+    A.rbc = @(Psi, Qxx, Qxy)[diff(Qxx); diff(Psi); Psi; diff(Qxy)];
 
     % SOLVE FOR THE EIGENVALUES
     sprintf("Solving eigenvalue problem for k=%0.3f, aBar=%0.3f, tBar=%0.3f", k, aBar, tBar)
