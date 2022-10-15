@@ -57,15 +57,4 @@ end
 figure();hold on;
 plot(ts, crit_activity_pos); plot(tsNeg, crit_activity_neg); 
 xlabel("$\bar\tau$",'interpreter', 'latex');
-ylabel("Critical Activity");
-title("Stablity Plot at k=0 and l=0");
-t1=text(1,13,"unstable", "FontSize", 15); 
-t2=text(1.3,-13,"unstable", "FontSize", 15); 
-t3=text(1.15,-1.7,"stable", "FontSize", 15);
-% x2 = [tsPos, fliplr(tsPos)];
-% inBetween = [crit_activity_pos, fliplr(crit_activity_neg)];
-% fill(x2, inBetween, 'b');
-% figure();
-% plot(ts, crit_activity2);
-% title("Stablity Plot at $k=0$ and $l=0$, \sigma_2",'interpreter','latex');
-% ylabel("Critical Activity");
+

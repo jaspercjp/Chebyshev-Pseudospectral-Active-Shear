@@ -36,7 +36,7 @@ disp("Finished!")
 
 %% ZERO k AND l SPECIAL CASE
 clear;
-k=0; tau=0.0001; gammaDot=1; nees=20; aBar=1;
+k=0; tau=0.0001; gammaDot=1; nees=20; aBar=3;
 sol = generateOSSol(k,aBar, tau, gammaDot, nees);
 
 
@@ -96,7 +96,7 @@ function [sigma, eigfcns] = findEigValsSub(k, aBar, tau, tBar, nees)
 
     % SOLVE FOR THE EIGENVALUES
     sprintf("Solving eigenvalue problem for k=%0.3f, aBar=%0.3f, tBar=%0.3f", k, aBar, tBar)
-    tic; [eigfcns, D] = eigs(A,B, nees, 'SM'); toc
+    tic; [eigfcns, D] = eigs(A,B, nees, -1e-6); toc
     ee = diag(D);
     sigma = ee;
 end
