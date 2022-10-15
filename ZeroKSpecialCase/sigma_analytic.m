@@ -1,7 +1,7 @@
 clear; clc;
-aBarSteps=3000; tBarSteps=100;
-ts = linspace(0,4,tBarSteps);
-as = linspace(0,3000,aBarSteps);
+aBarSteps=200; tBarSteps=500;
+ts = linspace(0,1,tBarSteps);
+as = linspace(0,5,aBarSteps);
 [tBar, aBar] = meshgrid(ts, as);
 
 sigma1 = (-2+aBar+(-2+aBar).*tBar.^2 - aBar.*tBar.^3 ...
@@ -20,6 +20,7 @@ for col=1:tBarSteps
    end
 end
 
+figure();
 plot(ts, crit_activity); xlabel("$\bar\tau$",'interpreter', 'latex');
 ylabel("Critical Activity");
 title("Stablity Plot at $k=0$ and $l=0$",'interpreter','latex');
