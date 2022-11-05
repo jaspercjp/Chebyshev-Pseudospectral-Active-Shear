@@ -15,7 +15,20 @@ from scipy.linalg import eig
 ## wavelength of the linear mode
 #k = 1
 
-def max_ev(k,_gammadot,_tau,_tau_a,):
+
+def ev(k,_gammadot,_tau,_tau_a,):
+	"""Takes in a set of parameters and returns the maximum eigenvalue that 
+	correspond to these parameter values.
+
+	Args:
+		k (real number): wavenumber
+		_gammadot (real number): external shear rate
+		_tau (real number): liquid crystal relaxation time
+		_tau_a (real number): activity time scale
+
+	Returns:
+		list[complx numbers]: a (cleaned of any infinities) list of eigenvalues
+	"""
 	# resolution
 	M = 50
 
@@ -25,7 +38,7 @@ def max_ev(k,_gammadot,_tau,_tau_a,):
 	_tmp_const = (_llambda*(_gammadot*_tau)**2)/(1+(_gammadot*_tau)**2)
 
 	##------------------------------------
-	mode_number = 94#79
+	mode_number = 94 #79
 	do_plot_mode = 0
 
 	##------------------------------------
@@ -140,9 +153,7 @@ def max_ev(k,_gammadot,_tau,_tau_a,):
 	_modes_list = _spec[1]
 
 	_clean_eig_list = list(filter(lambda ev: np.isfinite(ev), _eig_list))
-	max_val = max(_clean_eig_list)
-	return max_val
-
+	return _clean_eig_list
 
 #print("at k={}, gammadot={}, tau={}, tau_a={}, fastest growth rate:{:.4f} @ freq={:.4f}"\
 #.format(k,_gammadot,_tau,_tau_a,np.real(max_val),np.imag(max_val)))
