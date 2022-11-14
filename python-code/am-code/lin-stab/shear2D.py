@@ -17,14 +17,14 @@ from scipy.linalg import eig
 
 
 def ev(k,_gammadot,_tau,_tau_a,):
-	"""Takes in a set of parameters and returns the maximum eigenvalue that 
-	correspond to these parameter values.
+	"""Takes in a set of parameters and returns the spectrum that 
+	corresponds to these parameter values.
 
 	Args:
-		k (real number): wavenumber
-		_gammadot (real number): external shear rate
-		_tau (real number): liquid crystal relaxation time
-		_tau_a (real number): activity time scale
+		k (float): wavenumber
+		_gammadot (float): external shear rate
+		_tau (float): liquid crystal relaxation time
+		_tau_a (float): activity time scale
 
 	Returns:
 		list[complx numbers]: a (cleaned of any infinities) list of eigenvalues
@@ -199,3 +199,23 @@ if do_plot_mode:
 	f.write('%f %20.18f %20.18f\n'%(ygl[m],np.real(_Qxy[m]),np.imag(_Qxy[m])))
 	f.close()
 """
+
+def max_ev_kg_grid(ks, gds, tau, tau_a):
+	#assert len(ks)==len(gds), "Input vectors must have equal sizes for grid!"
+	# ks and gds are two vectors with EQUAL SIZES
+	kv, gv = np.meshgrid(ks, gds)
+
+	# N - number of rows, M - number of columns
+	Nk, Mk = len(kv), len(kv[0])
+	Ng, Mg = len(gv), len(gv[0])
+
+	evv = np.zeros([Nk, Mk])
+
+	for i in range(Nk):
+		for j in range(Mk):
+			k = kv[i][j]
+			gd = gv[i][j]
+			evv[i][j] = np.max(np.real(ev(k,gd,tau,tau_a)))
+
+	return evv
+
