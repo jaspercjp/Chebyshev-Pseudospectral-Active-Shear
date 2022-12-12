@@ -15,7 +15,8 @@ rng = default_rng()
 
 _resolution = 128
 _box_size = 100.
-Tmax = 90000.
+# Tmax = 90000.
+Tmax = 90.
 dt = 1.0e-1
 
 ########################
