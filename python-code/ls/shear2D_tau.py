@@ -3,7 +3,7 @@ import numpy as np
 from scipy.linalg import eig
 
 ##------------------------------------
-def ev_tau(k,_gd,_tau,_a):
+def ev_tau(k,_gd,_tau,_a,_ell_over_W_squared=0.01):
 	"""Takes in a set of parameters and returns the spectrum that 
 	corresponds to these parameter values.
 
@@ -21,8 +21,8 @@ def ev_tau(k,_gd,_tau,_a):
 
 	# parameters we don't really vary
 	_llambda = 1.0
-	_eta = 1
-	_ell_over_W_squared = 0.1
+	_eta = 1.0
+	# _ell_over_W_squared = 0
 	_aux_const = 1 + (_gd*_tau)**2
 	_tmp_const = k*k*_llambda / _aux_const 
 
@@ -82,13 +82,13 @@ def ev_tau(k,_gd,_tau,_a):
 
 	# Stokes equation
 	LHS[Rpsi, Rpsi] = (k**4*II - 2*(k**2)*D2 + np.dot(D2,D2))/_tau
-	LHS[Rpsi,RQxx] = 2j*_a*k*II/_eta
+	LHS[Rpsi,RQxx] = -2j*_a*k*D1/_eta
 	LHS[Rpsi, RQxy] = -(_a*(k**2)*II + _a*D2)/_eta
 
 	## Qxx equation
 	LHS[RQxx,Rpsi] = (_tmp_const*(_gd*_tau) * II\
 							- 2j*k*_llambda*D1 - (_llambda*_gd*_tau/_aux_const)*D2)
-	LHS[RQxx,RQxx] = (1 + _ell_over_W_squared*k*k + 1j*k*ygl)*II - _ell_over_W_squared*D2
+	LHS[RQxx,RQxx] = (1 + _ell_over_W_squared*k*k + 1j*k*ygl*_gd*_tau)*II - _ell_over_W_squared*D2
 	LHS[RQxx,RQxy] = -_gd*_tau*II
 
 	## Qxy equation
@@ -189,7 +189,7 @@ if do_plot_mode:
 	f.close()
 """
 
-def max_ev_gd_a_grid(_gds,_as,_k,_tau):
+def max_ev_gd_a_grid(_gds,_as,_k,_tau,ell_over_W_sq=0.01):
 	gdv, av = np.meshgrid(_gds,_as)
 
 	# N - number of rows (ny), M - number of columns (nx)
@@ -201,5 +201,5 @@ def max_ev_gd_a_grid(_gds,_as,_k,_tau):
 		for j in range(M):
 			gd = gdv[i][j]
 			a = av[i][j]
-			evv[i][j] = np.max(np.real(ev_tau(_k,gd,_tau,a)))
+			evv[i][j] = np.max(np.real(ev_tau(_k,gd,_tau,a,_ell_over_W_squared=ell_over_W_sq)))
 	return evv
