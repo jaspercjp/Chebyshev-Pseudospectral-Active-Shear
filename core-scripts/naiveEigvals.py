@@ -58,7 +58,7 @@ def ev_tau(k,_gd,_tau,_a,_ell_over_W_squared=0.01, M=50):
 	D1[M-1,M-1] = -D1[0,0]
 
 	# The factor 2 takes care of the domain being from -1/2 to 1/2
-	D1 = 2*D1
+	# D1 = 2*D1
 
 	D2 = np.dot(D1,D1)
 
