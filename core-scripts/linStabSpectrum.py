@@ -1,11 +1,10 @@
 import numpy as np
 from scipy.linalg import eig
 import numpy as np
-import matplotlib.pyplot as plt
-import matplotlib.lines as mlines
+from cheb import cheb
 
 ##------------------------------------
-def ev_tau(k,_gd,_tau,_a,_ell_over_W_squared=0.01, M=50):
+def spectrum(k,_gd,_tau,_a,_ell_over_W_squared=0.01, M=50):
 	"""Takes in a set of parameters and returns the spectrum that 
 	corresponds to these parameter values.
 
@@ -26,57 +25,24 @@ def ev_tau(k,_gd,_tau,_a,_ell_over_W_squared=0.01, M=50):
 	_aux_const = 1 + (_gd*_tau)**2
 	_tmp_const = k*k*_llambda / _aux_const 
 
-
-	##------------------------------------
-	mode_number = 94 #79
-	do_plot_mode = 0
-
 	##------------------------------------
 
 	II = np.identity(M,dtype='d')
 
-	cbar = np.ones(M,dtype='d')
-	cbar[0] = 2.0
-	cbar[M-1] = 2.0
+	# Build Chebyshev differention matrix and the grid points on [-1, 1]
+	D1, ygl = cheb(M)
 
-	# Chebyshev grid points
-	ygl = np.zeros(M,dtype='d')
-	for m in range(M):
-		ygl[m] = np.cos(np.pi*m/(M-1))
-
-	# Build Chebyshev differentiation matrix
-	D1 = np.zeros((M,M),dtype='d')
-	for l in range(M):
-		for j in range(M):
-			if l != j:
-				D1[l,j] = cbar[l]*((-1)**(l+j))/(cbar[j]*(ygl[l]-ygl[j]))
-
-	for j in range(1,M-1):
-		D1[j,j] = -0.5*ygl[j]/(1.0-ygl[j]*ygl[j])
-
-	D1[0,0] = (2.0*(M-1)*(M-1)+1.0)/6.0
-	D1[M-1,M-1] = -D1[0,0]
-
+	# let's just use [-1, 1] for simpliciy...
 	# The factor 2 takes care of the domain being from -1/2 to 1/2
 	# D1 = 2*D1
 
 	D2 = np.dot(D1,D1)
 
-	## Auxiliary matrices
-
-	Lmin = D2 - k*k*II 
-	Lplus = D2 + k*k*II 
-
-
-	## LHS
-
-	## Variable layout
-	## psi[0:M] Qxx[M:2*M] Qxy[2*M:3*M] 
-
+	# Variable layout
+	# psi[0:M] Qxx[M:2*M] Qxy[2*M:3*M] 
 	Rpsi  = slice(0*M,1*M)
 	RQxx  = slice(1*M,2*M)
 	RQxy  = slice(2*M,3*M)
-
 
 	LHS = np.zeros((3*M,3*M),dtype='D')
 
@@ -102,7 +68,6 @@ def ev_tau(k,_gd,_tau,_a,_ell_over_W_squared=0.01, M=50):
 	RHS[RQxy,RQxy] = -_tau*II
 
 	## Boundary conditions
-
 	LHS[0]     = np.zeros(3*M,dtype='D') # Psi vanishes at the boundaries
 	LHS[1]     = np.zeros(3*M,dtype='D') # and dy(Psi) (?) vanishes at the boundaries
 	LHS[M-2]   = np.zeros(3*M,dtype='D') # how does this code account for no-slip?
@@ -141,6 +106,7 @@ def ev_tau(k,_gd,_tau,_a,_ell_over_W_squared=0.01, M=50):
 	_eig_list = _spec[0]
 	_modes_list = _spec[1]
 
+	# clean the eigenvalue list of all infinities
 	_clean_eig_list = list(filter(lambda ev: np.isfinite(ev), _eig_list))
 	return _clean_eig_list
 

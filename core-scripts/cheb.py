@@ -24,5 +24,4 @@ def cheb(M):
     D1[M-1,M-1] = -D1[0,0]
 
     # The factor 2 takes care of the domain being from -1/2 to 1/2
-    DD1 = 2*D1
-    return (D1, DD1, ygl)
+    return (D1, ygl)
