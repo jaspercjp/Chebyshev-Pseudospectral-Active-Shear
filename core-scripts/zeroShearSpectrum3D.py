@@ -44,18 +44,19 @@ def spectrum(kx,a,_ell_over_W_squared=0.01, M=50):
 
 	LHS = np.zeros((8*M,8*M),dtype='D')
 
-	
-	LHS[RVx, RVz] = (kx**2)*eta*D1 - eta*D3 # Vx equation
+    # Vx equation
+	LHS[RVx, RVz] = (kx**2)*eta*D1 - eta*D3
 	LHS[RVx, RQxz] = 1j*a*kx*tau*D1 
 	LHS[RVx, RQyz] = a*tau*D2
-	LHS[RVy, RVz] = -1j*(kx**3)*eta*II + 1j*kx*eta*D2 # Vy equation
+	# Vy equation
+	LHS[RVy, RVz] = -1j*(kx**3)*eta*II + 1j*kx*eta*D2 
 	LHS[RVy, RQxz] = a*(kx**2)*tau*II
-	LHS[RVy, RQyz] = 1j*a*kx*tau*D1 
+	LHS[RVy, RQyz] = -1j*a*kx*tau*D1 
 	# Vz equation
 	LHS[RVz,RVy] = 1j*(kx**3)*eta*II - 1j*kx*eta*D2 
 	LHS[RVz,RQxy] = -a*(kx**2)*tau*II - a*tau*D2 
 	LHS[RVz,RQxx] = -2j*a*kx*tau*D1 
-	LHS[RVz,RQzz] = 1j*a*kx*tau*D1 
+	LHS[RVz,RQzz] = -1j*a*kx*tau*D1 
 	LHS[RVz,RVx] = -(kx**2)*eta*D1 + eta*D3
 
 	## Qxx equation
@@ -72,16 +73,16 @@ def spectrum(kx,a,_ell_over_W_squared=0.01, M=50):
 	## Qyz equation
 	LHS[RQyz, RQyz] = II + _ell_over_W_squared*(kx**2)*II - _ell_over_W_squared*D2 
 	LHS[RQyz, RVz] = -D1
-	## Qzz equation
+	## Qzz equation. This equation seems to be decoupled from all the other quantites! Is this right?
 	LHS[RQzz, RQzz] = II + _ell_over_W_squared*(kx**2)*II - _ell_over_W_squared*D2 
 	
 
 	RHS = np.zeros((8*M,8*M),dtype='D')
 	RHS[RQxx,RQxx] = -tau*II
 	RHS[RQxy,RQxy] = -tau*II
-	RHS[RQxz, RQxz] = -tau*II
-	RHS[RQyz, RQyz] = -tau*II
-	RHS[RQzz, RQzz] = -tau*II 
+	RHS[RQxz,RQxz] = -tau*II
+	RHS[RQyz,RQyz] = -tau*II
+	RHS[RQzz,RQzz] = -tau*II 
 
 	## Boundary conditions
     # Setup zeros for Vx's boundary conditions
@@ -156,9 +157,9 @@ def spectrum(kx,a,_ell_over_W_squared=0.01, M=50):
 	_modes_list = _spec[1]
 
 	# clean the eigenvalue list of all infinities
-	# clean_eig_list = _eig_list[finite_idx]
+	clean_eig_list = _eig_list[finite_idx]
 	clean_modes_list = _modes_list[finite_idx]
-	clean_eig_list = list(filter(lambda ev: np.isfinite(ev), _eig_list))
+	# clean_eig_list = list(filter(lambda ev: np.isfinite(ev), _eig_list))
 	
 	return (clean_eig_list, clean_modes_list)
 
