@@ -2,10 +2,20 @@ from zeroShearSpectrum3D import spectrum
 import numpy as np
 import matplotlib.pyplot as plt
 from cheb import cheb
-k,a = 1.25, 1.67
+k,a = 1.25, 1.09
 evals_low, evecs_low = spectrum(k,a,M=50)
 evals_high, evecs_high = spectrum(k,a,M=100)
-print(len(evals_low), len(evals_high))
+# print(len(evals_low), len(evals_high))
+re_evals_low = np.real(evals_low)
+re_evals_high = np.real(evals_high)
+re_evals_low = re_evals_low[np.argsort(-re_evals_low)]
+re_evals_high  = re_evals_high[np.argsort(-re_evals_high)]
+
+# n = min(len(re_evals_low), len(re_evals_high))
+# diffs = re_evals_low[0:n] - re_evals_high[0:n]
+# print(diffs)
+# plt.plot()
+
 # for ev in evals:
 #     print(ev)
 # max_rate = np.max(np.real(evals))
@@ -16,6 +26,7 @@ print(len(evals_low), len(evals_high))
 # D1, ygl = cheb(M)
 
 ## Plot a mode stored in evecs
+# evecs = evecs_high
 # plt.figure()
 # fig, axs = plt.subplots(3, 3)
 # Vx = np.reshape(evecs[idx,0:M], -1)

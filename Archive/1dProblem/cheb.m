@@ -1,7 +1,7 @@
 % CHEB compute D = differentiation matrix, x = Chebyshev grid
-function [D,x] = cheb(N, xSpan) % parameter N is the number of chebyshev points
+function [D,x] = cheb(N) % parameter N is the number of chebyshev points
     if N==0, D=0; x=1; return, end 
-    x = xSpan * cos(pi*(0:N)/N)';
+    x = cos(pi*(0:N)/N)';
     c = [2; ones(N-1,1); 2].*(-1).^(0:N)';
     X = repmat(x,1,N+1);
     dX = X-X';

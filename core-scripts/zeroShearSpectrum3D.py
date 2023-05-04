@@ -26,7 +26,7 @@ def spectrum(kx,a,_ell_over_W_squared=0.01, M=50):
 
 	II = np.identity(M,dtype='d')
 
-	# Build Chebyshev differention matrix and the grid points on [-1, 1]
+	# Build Chebyshev differentiation matrix and the grid points on [-1, 1]
 	D1, ygl = cheb(M)
 	D2 = np.dot(D1,D1)
 	D3 = np.dot(D2,D1)
@@ -158,7 +158,10 @@ def spectrum(kx,a,_ell_over_W_squared=0.01, M=50):
 
 	# clean the eigenvalue list of all infinities
 	clean_eig_list = _eig_list[finite_idx]
-	clean_modes_list = _modes_list[finite_idx]
+	print("There are",len(finite_idx),"finite eigenvalues")
+	print("The shape of the eigenmodes is",_modes_list.shape)
+	clean_modes_list = _modes_list[:,finite_idx]
+	print("The shape of the cleaned eigenmodes is",clean_modes_list.shape)
 	# clean_eig_list = list(filter(lambda ev: np.isfinite(ev), _eig_list))
 	
 	return (clean_eig_list, clean_modes_list)

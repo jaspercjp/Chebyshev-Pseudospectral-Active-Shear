@@ -1,6 +1,13 @@
 import numpy as np
 
 def cheb(M):
+    """
+    Produces an MxM Chebyshev differentiation matrix on the 
+    interval [-1, 1]
+
+    This function uses M interpolation points, which means that 
+    it is using a Chebyshev polynomial of degree M-1
+    """
     cbar = np.ones(M,dtype='d')
     cbar[0] = 2.0
     cbar[M-1] = 2.0
