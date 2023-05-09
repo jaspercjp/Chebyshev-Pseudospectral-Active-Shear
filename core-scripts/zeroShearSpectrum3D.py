@@ -2,23 +2,25 @@ import numpy as np
 from scipy.linalg import eig
 import numpy as np
 from cheb import cheb
+import matplotlib.pyplot as plt
 
 ##------------------------------------
 def spectrum(kx,a,_ell_over_W_squared=0.01, M=50):
 	"""Takes in a set of parameters and returns the spectrum that 
-	corresponds to these parameter values.
+	corresponds to these parameter values. The spectrum is calculated at 
+	zero shear in a three dimensional system, with y being the wall-normal
+	coordinate
 
 	Args:
-		k (float): wavenumber
-		_gammadot (float): external shear rate
+		kx (float): perturbation wavenumber
+		a (float): activity
 
 	Returns:
 		list[complx numbers]: a (cleaned of any infinities) list of eigenvalues
 	"""
 	# M is the resolution
 
-	# parameters 
-	llambda = 1.0
+	# parameters
 	eta = 1.0
 	tau = 1.0
 
@@ -158,55 +160,63 @@ def spectrum(kx,a,_ell_over_W_squared=0.01, M=50):
 
 	# clean the eigenvalue list of all infinities
 	clean_eig_list = _eig_list[finite_idx]
-	print("There are",len(finite_idx),"finite eigenvalues")
-	print("The shape of the eigenmodes is",_modes_list.shape)
+	# print("There are",len(finite_idx),"finite eigenvalues")
+	# print("The shape of the eigenmodes is",_modes_list.shape)
 	clean_modes_list = _modes_list[:,finite_idx]
-	print("The shape of the cleaned eigenmodes is",clean_modes_list.shape)
+	# print("The shape of the cleaned eigenmodes is",clean_modes_list.shape)
 	# clean_eig_list = list(filter(lambda ev: np.isfinite(ev), _eig_list))
 	
 	return (clean_eig_list, clean_modes_list)
 
-#print("at k={}, gammadot={}, tau={}, tau_a={}, fastest growth rate:{:.4f} @ freq={:.4f}"\
-#.format(k,_gammadot,_tau,_tau_a,np.real(max_val),np.imag(max_val)))
-#print("at k={}, tBar={}, aBar={}, fastest growth rate:{:.4f} @ freq={:.4f}"\
-#.format(k,_gammadot*_tau,1/(_gammadot*_tau_a),np.real(max_val),np.imag(max_val)))
+def plot_modes(idx, ygl, evecs, M):
+    """ Plots the mode at index "idx" on the coordinates "ygl" """
+    plt.figure()
+    fig, axs = plt.subplots(3, 3)
+    Vx = np.reshape(evecs[0:M, idx], -1)
+    axs[0,0].plot(ygl, np.real(Vx))
+    axs[0,0].plot(ygl, np.imag(Vx))
+    axs[0,0].title.set_text('$V_x$')
 
-"""
-f=open('spectrum.txt','w')
-for i in range(len(_eig_list)):
-	if np.isfinite(_eig_list[i]):
-	f.write('%20.18f %20.18f\n'%(np.real(_eig_list[i]),np.imag(_eig_list[i]))    )
-f.close()
+    Vy = np.reshape(evecs[M:2*M,idx], -1)
+    axs[0,1].plot(ygl, np.real(Vy))
+    axs[0,1].plot(ygl, np.imag(Vy))
+    axs[0,1].title.set_text('$V_y$')
 
-f=open('list.txt','w')
-for i in range(len(_eig_list)):
-	f.write('%d %20.18f %20.18f\n'%(i,np.real(_eig_list[i]),np.imag(_eig_list[i]))    )    
-f.close()
-  """
+    Vz = np.reshape(evecs[2*M:3*M,idx], -1)
+    axs[0,2].plot(ygl, np.real(Vz))
+    axs[0,2].plot(ygl, np.imag(Vz))
+    axs[0,2].title.set_text('$V_z$')
 
+    Qxx = np.reshape(evecs[3*M:4*M,idx], -1)
+    axs[1,0].plot(ygl, np.real(Qxx))
+    axs[1,0].plot(ygl, np.imag(Qxx))
+    axs[1,0].title.set_text('$Q_{xx}$')
 
-## OUTPUT
-"""
-_my_mode=_modes_list[:,mode_number]
+    Qxy = np.reshape(evecs[4*M:5*M,idx], -1)
+    axs[1,1].plot(ygl, np.real(Qxy))
+    axs[1,1].plot(ygl, np.imag(Qxy))
+    axs[1,1].title.set_text('$Q_{xy}$')
 
-_psi=_my_mode[0:M]
-_Qxx=_my_mode[M:2*M]
-_Qxy=_my_mode[2*M:3*M]
+    Qxz = np.reshape(evecs[5*M:6*M,idx], -1)
+    axs[1,2].plot(ygl, np.real(Qxz))
+    axs[1,2].plot(ygl, np.imag(Qxz))
+    axs[1,2].title.set_text('$Q_{xz}$')
 
-if do_plot_mode:
+    Qyz = np.reshape(evecs[6*M:7*M,idx], -1)
+    axs[2,0].plot(ygl, np.real(Qyz))
+    axs[2,0].plot(ygl, np.imag(Qyz))
+    axs[2,0].title.set_text('$Q_{yz}$')
 
-	f=open('psi.field','w')
-	for m in range(M):
-	f.write('%f %20.18f %20.18f\n'%(ygl[m],np.real(_psi[m]),np.imag(_psi[m])))
-	f.close()
+    Qzz = np.reshape(evecs[7*M:8*M,idx], -1)
+    axs[2,1].plot(ygl, np.real(Qzz))
+    axs[2,1].plot(ygl, np.imag(Qzz))
+    axs[2,1].title.set_text('$Q_{zz}$')
+    
+    fig.tight_layout()
+    
+    for ax in axs.flat:
+        ax.set(xlabel='$y$')
 
-	f=open('Qxx.field','w')
-	for m in range(M):
-	f.write('%f %20.18f %20.18f\n'%(ygl[m],np.real(_Qxx[m]),np.imag(_Qxx[m])))
-	f.close()
-
-	f=open('Qxy.field','w')
-	for m in range(M):
-	f.write('%f %20.18f %20.18f\n'%(ygl[m],np.real(_Qxy[m]),np.imag(_Qxy[m])))
-	f.close()
-"""
+    # Hide x labels and tick labels for top plots and y ticks for right plots.
+    # for ax in axs.flat:
+    #     ax.label_outer()
