@@ -11,7 +11,7 @@ for N = 40:20:100
     A = (D4-2*D2+I)/R - 2i*I - 1i*diag(1-x(2:N).^2)*(D2-I);
     B = D2-I;
     [V,ee] = eig(A,B);
-    subplot(2,2,i); plot(x(2:N),V(:,4));
+%     subplot(2,2,i); plot(x(2:N),V(:,4));
     i=i+1;
 %     i = N/20-1; subplot('position',[ax(i) ay(i) .38 .38])
 %     plot(ee,'.','markersize',12)
