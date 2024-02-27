@@ -4,6 +4,10 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.lines as mlines
 
+"""
+	2D Implementation, with all terms involving k and gammadot removed.
+"""
+
 ##------------------------------------
 def ev_tau(k,_tau,_a,_ell_over_W_squared=0.01, M=50):
 	"""Takes in a set of parameters and returns the spectrum that 

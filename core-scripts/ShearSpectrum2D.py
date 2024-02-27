@@ -4,26 +4,27 @@ import numpy as np
 from cheb import cheb
 
 ##------------------------------------
-def spectrum(k,_gd,_tau,_a,_ell_over_W_squared=0.01, M=50):
+def spectrum(k,gd,a,ell_over_W_squared=0.01,M=50):
 	"""Takes in a set of parameters and returns the spectrum that 
 	corresponds to these parameter values.
 
 	Args:
 		k (float): wavenumber
 		_gammadot (float): external shear rate
-		_tau (float): liquid crystal relaxation time
+		tau (float): liquid crystal relaxation time
 		_tau_a (float): activity time scale
 
 	Returns:
-		list[complx numbers]: a (cleaned of any infinities) list of eigenvalues
+		list[complex numbers]: a (cleaned of any infinities) list of eigenvalues
 	"""
 	# M is the resolution
 
 	# parameters 
-	_llambda = 1.0
-	_eta = 1.0
-	_aux_const = 1 + (_gd*_tau)**2
-	_tmp_const = k*k*_llambda / _aux_const 
+	llambda = 1.0
+	eta = 1.0
+	tau = 1.0
+	_aux_const = 1 + (gd*tau)**2
+	_tmp_const = k*k*llambda / _aux_const 
 
 	##------------------------------------
 
@@ -34,9 +35,10 @@ def spectrum(k,_gd,_tau,_a,_ell_over_W_squared=0.01, M=50):
 
 	# let's just use [-1, 1] for simpliciy...
 	# The factor 2 takes care of the domain being from -1/2 to 1/2
-	# D1 = 2*D1
-
+	# D1 *= 2
+	# ygl = (ygl+1)/2
 	D2 = np.dot(D1,D1)
+	D4 = D2@D2 
 
 	# Variable layout
 	# psi[0:M] Qxx[M:2*M] Qxy[2*M:3*M] 
@@ -47,31 +49,29 @@ def spectrum(k,_gd,_tau,_a,_ell_over_W_squared=0.01, M=50):
 	LHS = np.zeros((3*M,3*M),dtype='D')
 
 	# Stokes equation
-	LHS[Rpsi, Rpsi] = (k**4*II - 2*(k**2)*D2 + np.dot(D2,D2))/_tau
-	LHS[Rpsi,RQxx] = -2j*_a*k*D1/_eta
-	LHS[Rpsi, RQxy] = -(_a*(k**2)*II + _a*D2)/_eta
+	LHS[Rpsi, Rpsi] = eta*(k**4*II - 2*(k**2)*D2 + D4)/tau
+	LHS[Rpsi,RQxx] = -2j*a*k*D1
+	LHS[Rpsi, RQxy] = -a*(k**2)*II - a*D2
 
 	## Qxx equation
-	LHS[RQxx,Rpsi] = (_tmp_const*(_gd*_tau) * II\
-							- 2j*k*_llambda*D1 - (_llambda*_gd*_tau/_aux_const)*D2)
-	LHS[RQxx,RQxx] = (1 + _ell_over_W_squared*k*k + 1j*k*ygl*_gd*_tau)*II - _ell_over_W_squared*D2
-	LHS[RQxx,RQxy] = -_gd*_tau*II
+	LHS[RQxx,Rpsi] = _tmp_const*(gd*tau)*II - 2j*k*llambda*D1 - (llambda*gd*tau/_aux_const)*D2
+	LHS[RQxx,RQxx] = (1 + ell_over_W_squared*k*k + 1j*k*ygl*gd*tau)*II - ell_over_W_squared*D2
+	LHS[RQxx,RQxy] = -gd*tau*II
 
 	## Qxy equation
-	LHS[RQxy,Rpsi] = (-_tmp_const*(1 + 2*(_gd*_tau)**2)*II)\
-							- _llambda / _aux_const * D2
-	LHS[RQxy,RQxx] = _gd*_tau*II
-	LHS[RQxy,RQxy] = (1 + _ell_over_W_squared*k*k + 1j*k*ygl*_gd*_tau)*II - _ell_over_W_squared*D2
+	LHS[RQxy,Rpsi] = (-_tmp_const*(1 + 2*(gd*tau)**2)*II) - llambda/_aux_const*D2
+	LHS[RQxy,RQxx] = gd*tau*II
+	LHS[RQxy,RQxy] = (1 + ell_over_W_squared*k*k + 1j*k*ygl*gd*tau)*II - ell_over_W_squared*D2
 
 	RHS = np.zeros((3*M,3*M),dtype='D')
-	RHS[RQxx,RQxx] = -_tau*II
-	RHS[RQxy,RQxy] = -_tau*II
+	RHS[RQxx,RQxx] = -tau*II
+	RHS[RQxy,RQxy] = -tau*II
 
 	## Boundary conditions
 	LHS[0]     = np.zeros(3*M,dtype='D') # Psi vanishes at the boundaries
 	LHS[1]     = np.zeros(3*M,dtype='D') # and dy(Psi) (?) vanishes at the boundaries
 	LHS[M-2]   = np.zeros(3*M,dtype='D') # how does this code account for no-slip?
-	LHS[M-1]   = np.zeros(3*M,dtype='D')
+	LHS[M-1]   = np.zeros(3*M,dtype='D')    
 
 	LHS[0,0]      = 1.0
 	LHS[1,Rpsi]   = D1[0]
@@ -100,20 +100,22 @@ def spectrum(k,_gd,_tau,_a,_ell_over_W_squared=0.01, M=50):
 	RHS[2*M]   = np.zeros(3*M,dtype='D')
 	RHS[3*M-1] = np.zeros(3*M,dtype='D')
 
-
 	_spec = eig(LHS,RHS,left=0,right=1)
 
 	_eig_list = _spec[0]
+	finite_idx = np.where(np.isfinite(_eig_list))[0]
 	_modes_list = _spec[1]
 
 	# clean the eigenvalue list of all infinities
-	_clean_eig_list = list(filter(lambda ev: np.isfinite(ev), _eig_list))
-	return _clean_eig_list
+	clean_eig_list = _eig_list[finite_idx]
+	clean_modes_list = _modes_list[:,finite_idx]
+
+	return (clean_eig_list, clean_modes_list)
 
 #print("at k={}, gammadot={}, tau={}, tau_a={}, fastest growth rate:{:.4f} @ freq={:.4f}"\
-#.format(k,_gammadot,_tau,_tau_a,np.real(max_val),np.imag(max_val)))
+#.format(k,_gammadot,tau,_tau_a,np.real(max_val),np.imag(max_val)))
 #print("at k={}, tBar={}, aBar={}, fastest growth rate:{:.4f} @ freq={:.4f}"\
-#.format(k,_gammadot*_tau,1/(_gammadot*_tau_a),np.real(max_val),np.imag(max_val)))
+#.format(k,_gammadot*tau,1/(_gammadot*_tau_a),np.real(max_val),np.imag(max_val)))
 
 """
 f=open('spectrum.txt','w')

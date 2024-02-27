@@ -1,0 +1,5 @@
+- how detailed should the methods section be? computational setup... eigenvalue pruning... Alex just glosses over it in his manuscript
+
+- tau*a/eta => dimless time in veqn
+
+- put analytical 1D stab result on the destab k plot, maybe that will tell us about the discrepancies

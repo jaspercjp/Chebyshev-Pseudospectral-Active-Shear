@@ -3,6 +3,9 @@ from scipy.linalg import eig
 import numpy as np
 from cheb import cheb
 
+"""
+	The full 2D implementation of the linear stabiltiy equations.
+"""
 ##------------------------------------
 def spectrum(k,_gd,_tau,_a,_ell_over_W_squared=0.01, M=50):
 	"""Takes in a set of parameters and returns the spectrum that 

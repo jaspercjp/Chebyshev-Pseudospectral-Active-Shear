@@ -2,6 +2,9 @@ import numpy as np
 from scipy.linalg import eig
 import numpy as np
 from cheb import cheb
+"""
+	2D implementation with zero shear.
+"""
 
 ##------------------------------------
 def spectrum(k,_a,_gd=0,_ell_over_W_squared=0.01, M=50):
@@ -105,11 +108,12 @@ def spectrum(k,_a,_gd=0,_ell_over_W_squared=0.01, M=50):
 	_spec = eig(LHS,RHS,left=0,right=1)
 
 	_eig_list = _spec[0]
+	finite_idx = np.where(np.isfinite(_eig_list))[0]
 	_modes_list = _spec[1]
 
-	# clean the eigenvalue list of all infinities
-	_clean_eig_list = list(filter(lambda ev: np.isfinite(ev), _eig_list))
-	return _clean_eig_list
+	clean_eig_list = _eig_list[finite_idx]
+	clean_modes_list = _modes_list[:,finite_idx]
+	return (clean_eig_list, clean_modes_list)
 
 #print("at k={}, gammadot={}, tau={}, tau_a={}, fastest growth rate:{:.4f} @ freq={:.4f}"\
 #.format(k,_gammadot,_tau,_tau_a,np.real(max_val),np.imag(max_val)))
