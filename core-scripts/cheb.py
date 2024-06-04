@@ -6,7 +6,7 @@ def cheb(M):
     interval [-1, 1]
 
     This function uses M interpolation points, which means that 
-    it is using a Chebyshev polynomial of degree M-1
+    it is using a polynomial of degree M-1
     """
     cbar = np.ones(M,dtype='d')
     cbar[0] = 2.0
