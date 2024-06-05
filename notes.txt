@@ -3,3 +3,7 @@
 - tau*a/eta => dimless time in veqn
 
 - put analytical 1D stab result on the destab k plot, maybe that will tell us about the discrepancies
+
+6/4/2024
+
+If the perturbation is three-dimensional, should we also add walls to the "left" and "right" sides of the channel, instead of it being unconfined in both directions? ... Then you would have more boundary conditions than variables :0
